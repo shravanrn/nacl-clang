@@ -28,6 +28,7 @@
 #include "llvm/MC/MCSectionMachO.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/TargetRegistry.h" // @LOCALMOD
+#include "llvm/NaClABI.h"
 #include <algorithm>
 #include <memory>
 using namespace clang;
@@ -712,6 +713,27 @@ public:
     this->SizeType = TargetInfo::UnsignedInt;
     this->PtrDiffType = TargetInfo::SignedInt;
     this->IntPtrType = TargetInfo::SignedInt;
+    if (NaClDontBreakABI && (Triple.getArch() == llvm::Triple::x86 || Triple.getArch() == llvm::Triple::x86_64))
+    {
+      if(Triple.getArch() == llvm::Triple::x86)
+      {
+        this->DoubleAlign = 32;
+        this->LongLongAlign = 32;
+        this->LongDoubleWidth = 96;
+        this->LongDoubleAlign = 32;
+        this->PointerAlign = 32;
+        this->PointerWidth = 32;
+      }
+      else
+      {
+        this->DoubleAlign = 64;
+        this->LongLongAlign = 64;
+        this->LongDoubleWidth = 128;
+        this->LongDoubleAlign = 128;
+        this->PointerAlign = 64;
+        this->PointerWidth = 64;
+      }
+    }
     // RegParmMax is inherited from the underlying architecture
     this->LongDoubleFormat = &llvm::APFloat::IEEEdouble;
     if (Triple.getArch() == llvm::Triple::arm) {
@@ -720,6 +742,10 @@ public:
       // Handled in X86_32's setDescriptionString.
     } else if (Triple.getArch() == llvm::Triple::x86_64) {
       this->DescriptionString = "e-m:e-p:32:32-i64:64-n8:16:32:64-S128";
+      if(NaClDontBreakABI)
+      {
+        this->DescriptionString = "e-m:e-i64:64-f80:128-n8:16:32:64-S128";
+      }
     } else if (Triple.getArch() == llvm::Triple::mipsel) {
       // Handled on mips' setDescriptionString.
     } else {
@@ -3421,7 +3447,13 @@ class X86_32TargetInfo : public X86TargetInfo {
   // @LOCALMOD-START
   virtual void setDescriptionString() {
     if (getTriple().isOSNaCl())
+    {
       DescriptionString = "e-m:e-p:32:32-i64:64-n8:16:32-S128";
+      if(NaClDontBreakABI)
+      {
+        DescriptionString = "e-m:e-p:32:32-f64:32:64-f80:32-n8:16:32-S128";
+      }
+    }
     else if (HasAlignedDouble)
       DescriptionString = "e-m:e-p:32:32-i64:64-f80:32-n8:16:32-S128";
     else
@@ -6444,6 +6476,27 @@ public:
     this->PtrDiffType = TargetInfo::SignedInt;
     this->IntPtrType = TargetInfo::SignedInt;
     this->RegParmMax = 0; // Disallow regparm
+    if (NaClDontBreakABI && (Triple.getArch() == llvm::Triple::x86 || Triple.getArch() == llvm::Triple::x86_64))
+    {
+      if(Triple.getArch() == llvm::Triple::x86)
+      {
+        this->DoubleAlign = 32;
+        this->LongLongAlign = 32;
+        this->LongDoubleWidth = 96;
+        this->LongDoubleAlign = 32;
+        this->PointerAlign = 32;
+        this->PointerWidth = 32;
+      }
+      else
+      {
+        this->DoubleAlign = 64;
+        this->LongLongAlign = 64;
+        this->LongDoubleWidth = 128;
+        this->LongDoubleAlign = 128;
+        this->PointerAlign = 64;
+        this->PointerWidth = 64;
+      }
+    }
   }
 
   void getDefaultFeatures(llvm::StringMap<bool> &Features) const override {
