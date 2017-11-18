@@ -732,6 +732,8 @@ public:
         this->LongDoubleAlign = 128;
         this->PointerAlign = 64;
         this->PointerWidth = 64;
+        this->LongAlign = 64;
+        this->LongWidth = 64;
       }
     }
     // RegParmMax is inherited from the underlying architecture
@@ -6495,6 +6497,8 @@ public:
         this->LongDoubleAlign = 128;
         this->PointerAlign = 64;
         this->PointerWidth = 64;
+        this->LongAlign = 64;
+        this->LongWidth = 64;
       }
     }
   }
