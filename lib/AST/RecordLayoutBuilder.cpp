@@ -2971,7 +2971,7 @@ void ASTContext::outputTypeToFile(const RecordDecl *RD, raw_ostream &OS) const
   }
 
   OS << "#undef sandbox_fields_reflection_exampleId_class_"  << structName << "\n";
-  OS << "#define sandbox_fields_reflection_exampleId_class_" << structName << "(f, g)";
+  OS << "#define sandbox_fields_reflection_exampleId_class_" << structName << "(f, g, ...)";
 
   const DeclContext * DC = cast<DeclContext>(RD);
 
@@ -2988,7 +2988,7 @@ void ASTContext::outputTypeToFile(const RecordDecl *RD, raw_ostream &OS) const
         SplitQualType T_split = T.getSplitDesugaredType();
         std::string fieldType = QualType::getAsString(T_split);
 
-        OS << " \\\n\tf(" << fieldType << ", " << fieldName << ")";
+        OS << " \\\n\tf(" << fieldType << ", " << fieldName << ", ##__VA_ARGS__)";
         OS << " \\\n\tg()";
       }
     }
@@ -2999,10 +2999,10 @@ void ASTContext::outputTypeToFile(const RecordDecl *RD, raw_ostream &OS) const
   StructsFound.insert(structName);
 
   OS << "#undef sandbox_fields_reflection_exampleId_allClasses\n";
-  OS << "#define sandbox_fields_reflection_exampleId_allClasses(f)";
+  OS << "#define sandbox_fields_reflection_exampleId_allClasses(f, ...)";
 
   for(auto foundStruct : StructsFound) {
-    OS << " \\\n\tf(" << foundStruct << ", exampleId)";  
+    OS << " \\\n\tf(" << foundStruct << ", exampleId, ##__VA_ARGS__)";  
   }
 
   OS << "\n";
