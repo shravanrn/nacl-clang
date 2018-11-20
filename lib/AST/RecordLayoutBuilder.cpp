@@ -2988,7 +2988,7 @@ void ASTContext::outputTypeToFile(const RecordDecl *RD, raw_ostream &OS) const
         SplitQualType T_split = T.getSplitDesugaredType();
         std::string fieldType = QualType::getAsString(T_split);
 
-        OS << " \\\n\tf(" << fieldType << ", " << fieldName << ", ##__VA_ARGS__)";
+        OS << " \\\n\tf(" << fieldType << ", " << fieldName << ", FIELD_NORMAL, ##__VA_ARGS__)";
         OS << " \\\n\tg()";
       }
     }
