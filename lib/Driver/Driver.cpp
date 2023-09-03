@@ -740,6 +740,13 @@ bool Driver::HandleImmediateArgs(const Compilation &C) {
   if (C.getArgs().hasArg(options::OPT_v))
     TC.printVerboseInfo(llvm::errs());
 
+  // @LOCALMOD-START
+  if (C.getArgs().hasArg(options::OPT_print_resource_dir)) {
+    llvm::outs() << ResourceDir;
+    return false;
+  }
+  // @LOCALMOD-START
+
   if (C.getArgs().hasArg(options::OPT_print_search_dirs)) {
     llvm::outs() << "programs: =";
     for (ToolChain::path_list::const_iterator it = TC.getProgramPaths().begin(),
